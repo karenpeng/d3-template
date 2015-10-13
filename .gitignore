@@ -1,3 +1,5 @@
 node_modules
 build
 data/*
+src/js/charts/*
+src/css/*
