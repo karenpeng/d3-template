@@ -1,5 +1,6 @@
 node_modules
 build
-data/*
+data/*.js
+data/*.csv
 src/js/charts/*
-src/css/*
+src/css/_style.css
