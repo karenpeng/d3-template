@@ -1,0 +1,245 @@
+#!/usr/bin/env node
+// vim:ft=javascript:
+
+/**
+ * Module dependencies.
+ */
+
+var fs = require('fs')
+  , join = require('path').join;
+
+/**
+ * Arguments.
+ */
+
+var args = process.argv.slice(2);
+
+/**
+ * Executable version.
+ */
+
+var version = '1.1.0';
+
+/**
+ * Templates directory.
+ */
+
+var templates = __dirname + '/../templates';
+
+/**
+ * Template.
+ */
+
+var template = 'default';
+
+/**
+ * Destination path.
+ */
+
+var dest = process.cwd();
+
+/**
+ * Usage information.
+ */
+
+var usage = [
+    ''
+  , '  Usage: ngen [options] [path]'
+  , ''
+  , '  Options:'
+  , ''
+  , '    -t, --template <name>   Use the template <name>'
+  , '    -d, --directory <path>  Use the template directory <path>'
+  , '    -V, --version           Output the current version'
+  , '    -h, --help              Display help information'
+  , ''
+].join('\n');
+
+/**
+ * Initialize a new `Template` with the given `name`.
+ *
+ * @param {String} name
+ * @api private
+ */
+
+function Template(name) {
+  this.name = name;
+  this.path = templates + '/' + name;
+  this.contentPath = this.path + '/content';
+  this.mod = require(this.path);
+  this.values = {};
+  this.directories = {};
+}
+
+/**
+ * Initialize template at `dest`.
+ *
+ * @param {String} dest
+ * @api private
+ */
+
+Template.prototype.init = function(dest){
+  var self = this
+    , vars = this.mod.variables
+    , keys = Object.keys(vars);
+
+  this.dest = dest;
+  console.log();
+
+  function next() {
+    var desc
+      , key = keys.shift();
+
+    function done(value) {
+      self.values[key] = String(value).trim();
+      self.values[key + 'UpperCase'] = self.values[key].toUpperCase();
+      next();
+    }
+
+    if (key) {
+      desc = vars[key];
+      if ('function' == typeof desc) {
+        desc(self.values, done);
+      } else {
+        ask(desc, done);
+      }
+    } else {
+      process.stdin.destroy();
+      self.create();
+    }
+  }
+
+  next();
+};
+
+/**
+ * Return the files for this template.
+ *
+ * @return {Array}
+ * @api private
+ */
+
+Template.prototype.__defineGetter__('files', function(){
+  var self = this
+    , files = [];
+  
+  (function next(dir) {
+    fs.readdirSync(dir).forEach(function(file){
+      files.push(file = dir + '/' + file);
+      var stat = fs.statSync(file);
+      if (stat.isDirectory()) {
+        self.directories[file] = true;
+        next(file);
+      }
+    });
+  })(this.contentPath);
+
+  return files;
+});
+
+/**
+ * Create the template files.
+ *
+ * @api private
+ */
+
+Template.prototype.create = function(){
+  var self = this;
+  console.log();
+  this.files.forEach(function(file){
+    var path = self.parse(file)
+      , out = join(dest, path.replace(self.contentPath, '')
+        .replace('gitignore', '.gitignore'));
+
+    // directory
+    if (self.directories[file]) {
+      try {
+        fs.mkdirSync(out, 0775);
+        console.log('  \033[90mcreate :\033[0m \033[36m%s\033[0m', out);
+      } catch (err) {
+        // ignore
+      }
+    // file
+    } else {
+      var str = self.parse(fs.readFileSync(file, 'utf8'));
+      fs.writeFileSync(out, str);
+      console.log('  \033[90mcreate :\033[0m \033[36m%s\033[0m', out);
+    }
+  });
+  console.log();
+};
+
+/**
+ * Parse `str`.
+ *
+ * @return {String}
+ * @api private
+ */
+
+Template.prototype.parse = function(str){
+  var self = this;
+  return str
+    .replace(/\{\{([^}]+)\}\}/g, function(_, key){
+      return self.values[key];
+    });
+};
+
+/**
+ * Require argument for `flag`.
+ */
+
+function requireArgument(flag) {
+  if (args.length) {
+    return args.shift();
+  } else {
+    console.error(flag + ' requires an argument');
+    process.exit(1);
+  }
+}
+
+/**
+ * Ask for user input.
+ */
+
+function ask(desc, callback) {
+  process.stdout.write('  \033[90m' + desc + '\033[0m');
+  process.stdin.setEncoding('utf8');
+  process.stdin.once('data', callback).resume();
+}
+
+// parse arguments
+
+var arg;
+while (args.length) {
+  switch (arg = args.shift()) {
+    case '-h':
+    case '--help':
+      console.log(usage);
+      process.exit();
+      break;
+    case '-t':
+    case '--template':
+      template = requireArgument(arg);
+      break;
+    case '-d':
+    case '--directory':
+      templates = fs.realpathSync(requireArgument(arg));
+      break;
+    default:
+      dest = arg;
+  }
+}
+
+// create template
+
+var tmpl = new Template(template);
+
+// dest
+
+try {
+  fs.mkdirSync(dest, 0775);
+} catch (err) {
+  // ignore
+}
+
+tmpl.init(dest);

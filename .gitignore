@@ -1,6 +1,6 @@
-node_modules
-build
-data/*.js
-data/*.csv
-src/js/charts/*
-src/css/_style.css
+templates/node_modules
+templates/build
+templates/data/*.js
+templates/data/*.csv
+templates/src/js/charts/*
+templates/src/css/_style.css
