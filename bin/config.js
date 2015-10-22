@@ -1,25 +1,39 @@
 var fs = require('fs')
-  , join = require('path').join;
+  , join = require('path').join
 
-var names = fs.readdirSync('./../templates')
+var root = './../templates'
 
-names.forEach(function(name){
-  fs.stat(join('./../templates',  name), function(err, stats){
-    if (err) {
+function copyPaste(dir){
+
+  var names = fs.readdirSync(dir)
+
+  //console.log(names)
+
+  names.forEach(function(name){
+    
+    if(name === 'node_modules') return
+    
+    fs.stat(join(dir, name), function(err, stats){
+      if (err) {
         console.log(err);
         return; 
-    }
-    
-    if (stats.isFile()) {
+      }
+      
+      if (stats.isFile()) {
 
-        var contents = fs.readFileSync(join('./', name))
-        console.log(contents)
-        //fs.writeFileSync(join('./', name), contents)
-    }
-    if (stats.isDirectory()) {
-        //walk(file, calback);
-        //console.log('it;s a eirectory ', name)
-        //fs.mkdirSync(join('./' , name), 'utf-8')
-    }
+        var contents = fs.readFileSync(join(dir, name), 'utf-8')     
+        fs.writeFileSync(join(dir.replace(root, './..'), name), contents, 'utf-8')
+        
+      }
+      if (stats.isDirectory()) {
+
+        fs.mkdirSync(join(dir.replace(root, './..'), name))
+        if(name !== 'build') copyPaste(join(dir, name))
+      }
+    })
+  
+
   })
-})
+}
+
+copyPaste(root)
