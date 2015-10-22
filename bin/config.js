@@ -1,32 +1,25 @@
 var fs = require('fs')
   , join = require('path').join;
 
-fs.readdirSync('./../templates', function(err, stuffs){
-  console.log('hello')
-   stuffs.forEach(function(stuff){
-      //console.log(fs.stat.isFile(stuff))
-      console.log('hello')
-      fs.state('./../templates' + stuff, function(err, stats){
-        if (err) {
-            console.log(err);
-            return; // exit here since stats will be undefined
-        }
-        console.log(stats)
-        if (stats.isFile()) {
-            //calback(dir + "/" + file);
-            console.log('it;s a file')
-        }
-        if (stats.isDirectory()) {
-            //walk(file, calback);
-            console.log('it;s a eirectory')
-        }
-      })
-    })
- })
+var names = fs.readdirSync('./../templates')
 
-  // folders.forEach(function(folder){
-  //   fs.mkdir('./../' + folder)
-  //   fs.writeFile(file, data, function(err, wat){
+names.forEach(function(name){
+  fs.stat(join('./../templates',  name), function(err, stats){
+    if (err) {
+        console.log(err);
+        return; 
+    }
+    
+    if (stats.isFile()) {
 
-  //   })
-  // })
+        var contents = fs.readFileSync(join('./', name))
+        console.log(contents)
+        //fs.writeFileSync(join('./', name), contents)
+    }
+    if (stats.isDirectory()) {
+        //walk(file, calback);
+        //console.log('it;s a eirectory ', name)
+        //fs.mkdirSync(join('./' , name), 'utf-8')
+    }
+  })
+})
