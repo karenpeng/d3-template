@@ -7,8 +7,6 @@ function copyPaste(dir){
 
   var names = fs.readdirSync(dir)
 
-  //console.log(names)
-
   names.forEach(function(name){
     
     if(name === 'node_modules') return
@@ -19,19 +17,20 @@ function copyPaste(dir){
         return; 
       }
       
+      var newDir =  dir.replace(/templates\/*/, '')
       if (stats.isFile()) {
 
         var contents = fs.readFileSync(join(dir, name), 'utf-8')     
-        fs.writeFileSync(join(dir.replace(root, './..'), name), contents, 'utf-8')
-        
+        fs.writeFileSync(join(newDir, name), contents, 'utf-8')
+
       }
       if (stats.isDirectory()) {
 
-        fs.mkdirSync(join(dir.replace(root, './..'), name))
-        if(name !== 'build') copyPaste(join(dir, name))
+        fs.mkdirSync(join(newDir, name))
+        if(name === 'build' || name === 'data' || name === 'charts' || name === 'css') return
+        copyPaste(join(dir, name))
       }
     })
-  
 
   })
 }
