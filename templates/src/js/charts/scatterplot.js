@@ -34,16 +34,17 @@ svg.append("g")
     .attr("class", "y axis")
     .call(yAxis);
 
-function makeScatterPlot(data){
-    x.domain(d3.extent(data, (d) => { return d.x; }))
-    y.domain(d3.extent(data, (d) => { return d.y; }))
-svg.selectAll(".dot")
-    .data(data)
-  .enter().append("circle")
-    .attr("class", "dot")
-    .attr("cx", (d) => { return x(d.x); })
-    .attr("cy", (d) => { return y(d.y); })
-    .attr("r", 12);
+export function makeScatterPlot(data){
+    console.dir(data)
+    x.domain(d3.extent(data, (d) => { return +d.x; }))
+    y.domain(d3.extent(data, (d) => { return +d.y; }))
+    svg.selectAll(".dot")
+        .data(data)
+      .enter().append("circle")
+        .attr("class", "dot")
+        .attr("cx", (d) => { return x(+d.x); })
+        .attr("cy", (d) => { return y(+d.y); })
+        .attr("r", 12);
 }
 
 function pad(scale, k) {

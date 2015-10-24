@@ -1,3 +1,3 @@
 ## d3-template
 
-empty d3 template with browserify, babelify and gulp setup
+d3 template with browserify, babelify and gulp setup

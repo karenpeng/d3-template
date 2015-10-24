@@ -1,0 +1,28 @@
+{
+  "name": "d3-template",
+  "version": "1.0.0",
+  "description": "d3 template with browserify, babelify and gulp setup",
+  "main": "bin/config.js",
+  "bin": {
+    "d3-template": "config.js"
+  },
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/karenpeng/d3-template.git"
+  },
+  "keywords": [
+    "d3",
+    "template",
+    "browserify",
+    "gulp"
+  ],
+  "author": "ᶘ ᵒᴥᵒᶅ Karen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/karenpeng/d3-template/issues"
+  },
+  "homepage": "https://github.com/karenpeng/d3-template"
+}
