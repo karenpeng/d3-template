@@ -1,7 +1,7 @@
 var fs = require('fs')
   , join = require('path').join
 
-var root = './../templates'
+var root = join(__dirname, '../templates')
 
 function copyPaste(dir){
 
@@ -17,7 +17,7 @@ function copyPaste(dir){
         return; 
       }
       
-      var newDir =  dir.replace(/templates\/*/, '')
+      var newDir =  dir.replace('templates', '../..')
       if (stats.isFile()) {
 
         var contents = fs.readFileSync(join(dir, name), 'utf-8')     
