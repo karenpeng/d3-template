@@ -27,7 +27,7 @@ function copyPaste(dir){
       if (stats.isDirectory()) {
 
         fs.mkdirSync(join(newDir, name))
-        if(name === 'build' || name === 'data' || name === 'charts' || name === 'css') return
+        if(name === 'build') return
         copyPaste(join(dir, name))
       }
     })
@@ -36,3 +36,5 @@ function copyPaste(dir){
 }
 
 copyPaste(root)
+
+fs.rmdir(root)
