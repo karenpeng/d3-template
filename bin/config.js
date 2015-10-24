@@ -36,5 +36,3 @@ function copyPaste(dir){
 }
 
 copyPaste(root)
-
-fs.rmdir(root)
