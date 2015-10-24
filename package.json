@@ -4,7 +4,7 @@
   "description": "d3 template with browserify, babelify and gulp setup",
   "main": "bin/config.js",
   "bin": {
-    "d3-template": "config.js"
+    "d3-template": "bin/config.js"
   },
   "scripts": {
     "test": "gulp test"
