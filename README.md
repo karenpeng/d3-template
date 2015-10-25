@@ -8,5 +8,5 @@ d3 template with browserify, babelify and gulp setup
 
 ```cd node_modules/d3-template/bin```
 
-```node config.js```
+```node config.js [directory]```
 
