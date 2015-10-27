@@ -1,3 +1,5 @@
+#!/usr/bin/env node  
+
 var fs = require('fs')
   , join = require('path').join
 
